@@ -13,7 +13,9 @@ import {
   LayoutGrid,
   LayoutList,
   BookOpen,
-  Filter
+  Clock,
+  Bookmark,
+  CheckCircle2
 } from 'lucide-vue-next'
 
 const router = useRouter()
@@ -25,6 +27,37 @@ const viewMode = ref<'grid' | 'table'>('grid')
 
 // Confirm modal state
 const bookToDelete = ref<Book | null>(null)
+
+const statusTabs = computed(() => [
+  {
+    id: 'all',
+    label: 'All Books',
+    count: bookStore.stats.total,
+    activeClasses: 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 border-indigo-500',
+    icon: BookOpen
+  },
+  {
+    id: 'to-read',
+    label: 'To Read',
+    count: bookStore.stats.toRead,
+    activeClasses: 'bg-amber-500/20 text-amber-300 border-amber-500/40 ring-1 ring-amber-500/30',
+    icon: Clock
+  },
+  {
+    id: 'reading',
+    label: 'Reading',
+    count: bookStore.stats.reading,
+    activeClasses: 'bg-sky-500/20 text-sky-300 border-sky-500/40 ring-1 ring-sky-500/30',
+    icon: Bookmark
+  },
+  {
+    id: 'finished',
+    label: 'Finished',
+    count: bookStore.stats.finished,
+    activeClasses: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 ring-1 ring-emerald-500/30',
+    icon: CheckCircle2
+  }
+])
 
 const filteredBooks = computed<Book[]>(() => {
   return bookStore.books.filter((book) => {
@@ -57,34 +90,49 @@ const executeDelete = (): void => {
 
 <template>
   <div class="space-y-6">
-    <!-- Controls Bar -->
-    <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 backdrop-blur-xl space-y-4 md:space-y-0 md:flex md:items-center md:justify-between gap-4">
-      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1">
-        <div class="relative flex-1">
-          <Search class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="Search books by title or author..."
-            class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950/70 border border-slate-800 text-slate-100 text-sm placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 transition-all"
-          />
-        </div>
+    <!-- Prominent Status Filter Pills Bar -->
+    <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+      <button
+        v-for="tab in statusTabs"
+        :key="tab.id"
+        @click="selectedStatus = tab.id"
+        :class="[
+          'px-4 py-2.5 rounded-xl border text-sm font-medium transition-all duration-200 flex items-center gap-2.5 whitespace-nowrap cursor-pointer select-none',
+          selectedStatus === tab.id
+            ? tab.activeClasses
+            : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:bg-slate-800 hover:text-slate-200'
+        ]"
+      >
+        <component :is="tab.icon" class="w-4 h-4" />
+        <span>{{ tab.label }}</span>
+        <span
+          :class="[
+            'ml-1 px-2 py-0.5 rounded-full text-xs font-bold transition-colors',
+            selectedStatus === tab.id
+              ? 'bg-white/20 text-white'
+              : 'bg-slate-800 text-slate-400'
+          ]"
+        >
+          {{ tab.count }}
+        </span>
+      </button>
+    </div>
 
-        <div class="relative min-w-[160px]">
-          <Filter class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-          <select
-            v-model="selectedStatus"
-            class="w-full pl-10 pr-8 py-2.5 rounded-xl bg-slate-950/70 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 transition-all appearance-none cursor-pointer"
-          >
-            <option value="all">All Statuses</option>
-            <option value="to-read">To Read</option>
-            <option value="reading">Reading</option>
-            <option value="finished">Finished</option>
-          </select>
-        </div>
+    <!-- Secondary Search & Controls Bar -->
+    <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 backdrop-blur-xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+      <!-- Search Input -->
+      <div class="relative flex-1">
+        <Search class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+        <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="Search books by title or author..."
+          class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950/70 border border-slate-800 text-slate-100 text-sm placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 transition-all"
+        />
       </div>
 
-      <div class="flex items-center gap-2 justify-between sm:justify-end">
+      <!-- View Toggles & Add Button -->
+      <div class="flex items-center gap-3 justify-between sm:justify-end">
         <div class="flex bg-slate-950/70 border border-slate-800 rounded-xl p-1">
           <button
             @click="viewMode = 'grid'"
