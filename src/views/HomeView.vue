@@ -8,8 +8,6 @@ import type { Book } from '../types/book'
 import {
   Search,
   Plus,
-  Edit2,
-  Trash2,
   LayoutGrid,
   LayoutList,
   BookOpen,
@@ -21,12 +19,9 @@ import {
 const router = useRouter()
 const bookStore = useBookStore()
 
-const searchQuery = ref<string>('')
-const selectedStatus = ref<string>('all')
-const viewMode = ref<'grid' | 'table'>('grid')
-
-// Confirm modal state
-const bookToDelete = ref<Book | null>(null)
+const searchQuery = ref<string>('');
+const selectedStatus = ref<string>('reading');
+const viewMode = ref<'grid' | 'table'>('table');
 
 const statusTabs = computed(() => [
   {
@@ -72,42 +67,31 @@ const filteredBooks = computed<Book[]>(() => {
   })
 })
 
-const handleEdit = (id: string): void => {
-  router.push(`/edit/${id}`)
-}
-
-const confirmDelete = (book: Book): void => {
-  bookToDelete.value = book
-}
-
-const executeDelete = (): void => {
-  if (bookToDelete.value) {
-    bookStore.deleteBook(bookToDelete.value.id)
-    bookToDelete.value = null
-  }
+const handleView = (id: string): void => {
+  router.push(`/book/${id}`)
 }
 </script>
 
 <template>
   <div class="space-y-6">
     <!-- Prominent Status Filter Pills Bar -->
-    <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+    <div class="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-2">
       <button
         v-for="tab in statusTabs"
         :key="tab.id"
         @click="selectedStatus = tab.id"
         :class="[
-          'px-4 py-2.5 rounded-xl border text-sm font-medium transition-all duration-200 flex items-center gap-2.5 whitespace-nowrap cursor-pointer select-none',
+          'w-full sm:w-auto px-3 sm:px-4 py-2.5 rounded-xl border text-sm font-medium transition-all duration-200 flex items-center justify-center sm:justify-start gap-2 sm:gap-2.5 cursor-pointer select-none',
           selectedStatus === tab.id
             ? tab.activeClasses
             : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:bg-slate-800 hover:text-slate-200'
         ]"
       >
-        <component :is="tab.icon" class="w-4 h-4" />
-        <span>{{ tab.label }}</span>
+        <component :is="tab.icon" class="w-4 h-4 shrink-0" />
+        <span class="truncate">{{ tab.label }}</span>
         <span
           :class="[
-            'ml-1 px-2 py-0.5 rounded-full text-xs font-bold transition-colors',
+            'ml-auto sm:ml-1 px-2 py-0.5 rounded-full text-xs font-bold transition-colors shrink-0',
             selectedStatus === tab.id
               ? 'bg-white/20 text-white'
               : 'bg-slate-800 text-slate-400'
@@ -196,12 +180,13 @@ const executeDelete = (): void => {
       <div
         v-for="book in filteredBooks"
         :key="book.id"
-        class="bg-slate-900/70 border border-slate-800 hover:border-indigo-500/40 rounded-2xl p-6 backdrop-blur-xl transition-all duration-300 flex flex-col justify-between group hover:shadow-xl hover:shadow-indigo-500/5"
+        @click="handleView(book.id)"
+        class="bg-slate-900/70 border border-slate-800 hover:border-indigo-500/40 rounded-2xl p-6 backdrop-blur-xl transition-all duration-300 flex flex-col justify-between group hover:shadow-xl hover:shadow-indigo-500/5 cursor-pointer"
       >
         <div>
           <div class="flex items-start justify-between gap-3 mb-3">
             <StatusBadge :status="book.status" />
-            <StarRating :model-value="book.rating" readonly size="sm" />
+            <StarRating v-if="book.status === 'finished'" :model-value="book.rating" readonly size="sm" />
           </div>
 
           <h3 class="text-lg font-bold text-slate-100 line-clamp-1 group-hover:text-indigo-400 transition-colors">
@@ -214,110 +199,55 @@ const executeDelete = (): void => {
           </p>
         </div>
 
-        <div class="flex items-center justify-between pt-4 border-t border-slate-800/80">
+        <div class="pt-4 border-t border-slate-800/80">
           <span class="text-xs text-slate-500">
             {{ new Date(book.updatedAt || book.createdAt).toLocaleDateString() }}
           </span>
-          <div class="flex items-center gap-1">
-            <button
-              @click="handleEdit(book.id)"
-              class="p-2 rounded-lg text-slate-400 hover:text-indigo-400 hover:bg-slate-800 transition-colors cursor-pointer"
-              title="Edit Book"
-            >
-              <Edit2 class="w-4 h-4" />
-            </button>
-            <button
-              @click="confirmDelete(book)"
-              class="p-2 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
-              title="Delete Book"
-            >
-              <Trash2 class="w-4 h-4" />
-            </button>
-          </div>
         </div>
       </div>
     </div>
 
     <!-- TABLE VIEW -->
     <div v-else class="bg-slate-900/70 border border-slate-800 rounded-2xl backdrop-blur-xl overflow-hidden shadow-xl">
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-sm text-slate-300">
+      <table class="w-full text-left text-sm text-slate-300 table-fixed sm:table-auto">
           <thead class="bg-slate-950/80 text-xs uppercase text-slate-400 border-b border-slate-800">
             <tr>
-              <th scope="col" class="px-6 py-4 font-semibold">Title</th>
-              <th scope="col" class="px-6 py-4 font-semibold">Author</th>
-              <th scope="col" class="px-6 py-4 font-semibold">Status</th>
-              <th scope="col" class="px-6 py-4 font-semibold">Rating</th>
-              <th scope="col" class="px-6 py-4 font-semibold text-right">Actions</th>
+              <th scope="col" class="px-3 py-3 sm:px-6 sm:py-4 font-semibold w-[45%] sm:w-auto">Title</th>
+              <th scope="col" class="hidden sm:table-cell px-6 py-4 font-semibold">Author</th>
+              <th scope="col" class="px-3 py-3 sm:px-6 sm:py-4 font-semibold w-[30%] sm:w-auto">Status</th>
+              <th scope="col" class="hidden sm:table-cell px-6 py-4 font-semibold">Rating</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-800/80">
             <tr
               v-for="book in filteredBooks"
               :key="book.id"
-              class="hover:bg-slate-800/40 transition-colors"
+              @click="handleView(book.id)"
+              class="hover:bg-slate-800/40 transition-colors cursor-pointer"
             >
-              <td class="px-6 py-4 font-semibold text-slate-100">
-                {{ book.title }}
+              <td class="px-3 py-3 sm:px-6 sm:py-4 align-top">
+                <div class="font-semibold text-slate-100 break-words">{{ book.title }}</div>
+                <div class="text-slate-400 text-xs mt-0.5 sm:hidden">{{ book.author }}</div>
+                <StarRating
+                  v-if="book.status === 'finished'"
+                  :model-value="book.rating"
+                  readonly
+                  size="sm"
+                  class="mt-1.5 sm:hidden"
+                />
               </td>
-              <td class="px-6 py-4 text-slate-300">
+              <td class="hidden sm:table-cell px-6 py-4 text-slate-300">
                 {{ book.author }}
               </td>
-              <td class="px-6 py-4">
+              <td class="px-3 py-3 sm:px-6 sm:py-4 align-top">
                 <StatusBadge :status="book.status" />
               </td>
-              <td class="px-6 py-4">
-                <StarRating :model-value="book.rating" readonly size="sm" />
-              </td>
-              <td class="px-6 py-4 text-right">
-                <div class="flex items-center justify-end gap-2">
-                  <button
-                    @click="handleEdit(book.id)"
-                    class="p-2 rounded-lg text-slate-400 hover:text-indigo-400 hover:bg-slate-800 transition-colors cursor-pointer"
-                    title="Edit"
-                  >
-                    <Edit2 class="w-4 h-4" />
-                  </button>
-                  <button
-                    @click="confirmDelete(book)"
-                    class="p-2 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
-                    title="Delete"
-                  >
-                    <Trash2 class="w-4 h-4" />
-                  </button>
-                </div>
+              <td class="hidden sm:table-cell px-6 py-4">
+                <StarRating v-if="book.status === 'finished'" :model-value="book.rating" readonly size="sm" />
               </td>
             </tr>
           </tbody>
         </table>
-      </div>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div
-      v-if="bookToDelete"
-      class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-    >
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
-        <h3 class="text-xl font-bold text-slate-100">Confirm Deletion</h3>
-        <p class="text-slate-300 text-sm">
-          Are you sure you want to delete <span class="font-semibold text-indigo-400">"{{ bookToDelete.title }}"</span>? This action cannot be undone.
-        </p>
-        <div class="flex items-center justify-end gap-3 pt-2">
-          <button
-            @click="bookToDelete = null"
-            class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium transition-colors cursor-pointer"
-          >
-            Cancel
-          </button>
-          <button
-            @click="executeDelete"
-            class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-sm font-medium shadow-lg shadow-rose-600/25 transition-colors cursor-pointer"
-          >
-            Delete Book
-          </button>
-        </div>
-      </div>
     </div>
   </div>
 </template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useBookStore } from '../stores/bookStore'
 import BookForm from '../components/BookForm.vue'
@@ -10,18 +10,27 @@ const route = useRoute()
 const router = useRouter()
 const bookStore = useBookStore()
 
+const showDeleteConfirm = ref(false)
+
 const bookId = computed<string>(() => route.params.id as string)
 const book = computed(() => bookStore.getBookById(bookId.value))
 
 const handleSave = (updatedData: BookFormData): void => {
   if (bookId.value) {
     bookStore.updateBook(bookId.value, updatedData)
-    router.push('/')
+    router.push(`/book/${bookId.value}`)
   }
 }
 
 const handleCancel = (): void => {
-  router.push('/')
+  router.push(`/book/${bookId.value}`)
+}
+
+const executeDelete = (): void => {
+  if (bookId.value) {
+    bookStore.deleteBook(bookId.value)
+    router.push('/')
+  }
 }
 </script>
 
@@ -43,6 +52,7 @@ const handleCancel = (): void => {
         :is-edit="true"
         @save="handleSave"
         @cancel="handleCancel"
+        @delete="showDeleteConfirm = true"
       />
     </div>
 
@@ -56,6 +66,32 @@ const handleCancel = (): void => {
       >
         Return to Home
       </router-link>
+    </div>
+
+    <div
+      v-if="showDeleteConfirm && book"
+      class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+    >
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
+        <h3 class="text-xl font-bold text-slate-100">Confirm Deletion</h3>
+        <p class="text-slate-300 text-sm">
+          Are you sure you want to delete <span class="font-semibold text-indigo-400">"{{ book.title }}"</span>? This action cannot be undone.
+        </p>
+        <div class="flex items-center justify-end gap-3 pt-2">
+          <button
+            @click="showDeleteConfirm = false"
+            class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium transition-colors cursor-pointer"
+          >
+            Cancel
+          </button>
+          <button
+            @click="executeDelete"
+            class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-sm font-medium shadow-lg shadow-rose-600/25 transition-colors cursor-pointer"
+          >
+            Delete Book
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>

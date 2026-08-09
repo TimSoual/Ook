@@ -12,6 +12,13 @@ import {
 } from 'lucide-vue-next'
 
 const bookStore = useBookStore()
+
+function formatDuration(days: number): string {
+  if (days === 0) return '—'
+  if (days < 30) return `${days} days`
+  const months = Math.round(days / 30)
+  return months === 1 ? '~1 month' : `~${months} months`
+}
 </script>
 
 <template>
@@ -28,7 +35,6 @@ const bookStore = useBookStore()
         </div>
       </div>
 
-      <!-- CSV Export Button -->
       <button
         @click="bookStore.exportToCSV"
         :disabled="bookStore.books.length === 0"
@@ -85,7 +91,7 @@ const bookStore = useBookStore()
     <!-- Rating & Breakdown Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <!-- Average Rating Card -->
-      <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 backdrop-blur-xl space-y-4">
+      <!-- <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 backdrop-blur-xl space-y-4">
         <div class="flex items-center gap-3">
           <div class="p-2 bg-amber-500/10 border border-amber-500/20 rounded-lg text-amber-400">
             <Award class="w-5 h-5" />
@@ -97,10 +103,10 @@ const bookStore = useBookStore()
           <span class="text-slate-400 text-sm">out of 5 stars</span>
         </div>
         <p class="text-slate-400 text-sm">Based on your ratings across {{ bookStore.stats.total }} books in your library.</p>
-      </div>
+      </div> -->
 
       <!-- Completion Rate Card -->
-      <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 backdrop-blur-xl space-y-4">
+      <!-- <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 backdrop-blur-xl space-y-4">
         <div class="flex items-center gap-3">
           <div class="p-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-400">
             <TrendingUp class="w-5 h-5" />
@@ -116,7 +122,37 @@ const bookStore = useBookStore()
         <p class="text-slate-400 text-sm">
           {{ bookStore.stats.finished }} of {{ bookStore.stats.total }} books marked as finished.
         </p>
+      </div> -->
+
+      <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 backdrop-blur-xl space-y-4">
+        <div class="flex items-center gap-3">
+          <div class="p-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-400">
+            <Award class="w-5 h-5" />
+          </div>
+          <h2 class="text-lg font-semibold text-slate-200">Finished This Month</h2>
+        </div>
+        <div class="flex items-baseline gap-3">
+          <span class="text-4xl font-extrabold text-emerald-400">
+            {{ bookStore.stats.finishedThisMonth }}
+          </span>
+        </div>
       </div>
+
+      <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 backdrop-blur-xl space-y-4">
+        <div class="flex items-center gap-3">
+          <div class="p-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-400">
+            <TrendingUp class="w-5 h-5" />
+          </div>
+          <h2 class="text-lg font-semibold text-slate-200">Avg Time to Finish</h2>
+        </div>
+        <div class="flex items-baseline gap-3">
+          <span class="text-4xl font-extrabold text-emerald-400">
+            {{ formatDuration(bookStore.stats.avgDaysToFinish) }}
+          </span>
+        </div>
+      </div>
+
+
     </div>
   </div>
 </template>

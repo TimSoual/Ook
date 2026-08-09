@@ -9,6 +9,8 @@ export interface Book {
   notes: string
   createdAt: string
   updatedAt: string
+  startedAt?: string
+  finishedAt?: string
 }
 
 export type BookFormData = Omit<Book, 'id' | 'createdAt' | 'updatedAt'>

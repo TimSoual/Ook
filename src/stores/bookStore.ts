@@ -4,6 +4,11 @@ import type { Book, BookFormData } from '../types/book'
 
 const STORAGE_KEY = 'book-tracker-books-v1'
 
+const thirtyDaysAgo = new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).toISOString()
+const fifteenDaysAgo = new Date(Date.now() - 1000 * 60 * 60 * 24 * 15).toISOString()
+const fiveDaysAgo = new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString()
+const twoDaysAgo = new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString()
+
 const initialSampleBooks: Book[] = [
   {
     id: 'sample-1',
@@ -12,8 +17,10 @@ const initialSampleBooks: Book[] = [
     status: 'finished',
     rating: 5,
     notes: 'An easy & proven way to build good habits & break bad ones. Essential reading on behavioral psychology.',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).toISOString(),
-    updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).toISOString()
+    createdAt: thirtyDaysAgo,
+    updatedAt: fiveDaysAgo,
+    startedAt: thirtyDaysAgo,
+    finishedAt: fiveDaysAgo
   },
   {
     id: 'sample-2',
@@ -22,8 +29,9 @@ const initialSampleBooks: Book[] = [
     status: 'reading',
     rating: 5,
     notes: 'Deep dive into storage engines, distributed consensus, data modeling, and fault tolerance.',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 15).toISOString(),
-    updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString()
+    createdAt: fifteenDaysAgo,
+    updatedAt: twoDaysAgo,
+    startedAt: fifteenDaysAgo
   },
   {
     id: 'sample-3',
@@ -32,10 +40,19 @@ const initialSampleBooks: Book[] = [
     status: 'to-read',
     rating: 4,
     notes: 'Sci-Fi novel from the author of The Martian. Recommended by friends.',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
-    updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString()
+    createdAt: fiveDaysAgo,
+    updatedAt: fiveDaysAgo,
+    startedAt: fiveDaysAgo
   }
 ]
+
+const normalizeBook = (book: Book): Book => ({
+  ...book,
+  startedAt: book.startedAt ?? book.createdAt,
+  ...(book.status === 'finished' && !book.finishedAt
+    ? { finishedAt: book.updatedAt ?? book.createdAt }
+    : {})
+})
 
 export const useBookStore = defineStore('bookStore', () => {
   const books = ref<Book[]>([])
@@ -46,7 +63,7 @@ export const useBookStore = defineStore('bookStore', () => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY)
       if (stored) {
-        books.value = JSON.parse(stored)
+        books.value = (JSON.parse(stored) as Book[]).map(normalizeBook)
       } else {
         books.value = initialSampleBooks
         saveToLocalStorage()
@@ -80,8 +97,41 @@ export const useBookStore = defineStore('bookStore', () => {
     const avgRating = total > 0 
       ? (books.value.reduce((acc, b) => acc + (Number(b.rating) || 0), 0) / total).toFixed(1) 
       : '0.0'
+  
+    // Finished this month
+    const now = new Date()
+    const finishedThisMonth = books.value.filter(b => {
+      if (!b.finishedAt) return false
+      const finishedDate = new Date(b.finishedAt)
+      return (
+        finishedDate.getMonth() === now.getMonth() &&
+        finishedDate.getFullYear() === now.getFullYear()
+      )
+    }).length
+  
+    // Average time to finish
+    const finishedWithStarted = books.value.filter(b => b.startedAt && b.finishedAt)
+    const avgDaysToFinish = finishedWithStarted.length > 0
+      ? Math.round(
+          finishedWithStarted.reduce((sum, b) => {
+            const start = new Date(b.startedAt!)
+            const end = new Date(b.finishedAt!)
+            return sum + Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
+          }, 0) / finishedWithStarted.length
+        )
+      : 0;
 
-    return { total, toRead, reading, finished, avgRating }
+      console.log(avgDaysToFinish)
+  
+    return { 
+      total, 
+      toRead, 
+      reading, 
+      finished, 
+      avgRating, 
+      finishedThisMonth, 
+      avgDaysToFinish 
+    }
   })
 
   // Actions
@@ -91,7 +141,9 @@ export const useBookStore = defineStore('bookStore', () => {
       ...bookData,
       id: 'book-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
       createdAt: now,
-      updatedAt: now
+      updatedAt: now,
+      startedAt: now,
+      ...(bookData.status === 'finished' ? { finishedAt: now } : {})
     }
     books.value.unshift(newBook)
     saveToLocalStorage()
@@ -101,10 +153,23 @@ export const useBookStore = defineStore('bookStore', () => {
   const updateBook = (id: string, bookData: Partial<BookFormData>): void => {
     const index = books.value.findIndex(b => b.id === id)
     if (index !== -1) {
+      const existing = books.value[index]
+      const now = new Date().toISOString()
+      const newStatus = bookData.status ?? existing.status
+      const dateUpdates: Pick<Book, 'finishedAt'> = {}
+
+      if (newStatus === 'finished' && existing.status !== 'finished') {
+        dateUpdates.finishedAt = now
+      } else if (newStatus !== 'finished' && existing.status === 'finished') {
+        dateUpdates.finishedAt = undefined
+      }
+
       books.value[index] = {
-        ...books.value[index],
+        ...existing,
         ...bookData,
-        updatedAt: new Date().toISOString()
+        ...dateUpdates,
+        startedAt: existing.startedAt ?? existing.createdAt,
+        updatedAt: now
       }
       saveToLocalStorage()
     }
@@ -118,7 +183,7 @@ export const useBookStore = defineStore('bookStore', () => {
   const exportToCSV = (): void => {
     if (books.value.length === 0) return
 
-    const headers = ['ID', 'Title', 'Author', 'Status', 'Rating', 'Notes', 'Created At']
+    const headers = ['ID', 'Title', 'Author', 'Status', 'Rating', 'Notes', 'Created At', 'Started At', 'Finished At']
     const csvRows = [headers.join(',')]
 
     for (const book of books.value) {
@@ -129,7 +194,9 @@ export const useBookStore = defineStore('bookStore', () => {
         `"${book.status}"`,
         book.rating || 0,
         `"${(book.notes || '').replace(/"/g, '""').replace(/\n/g, ' ')}"`,
-        `"${book.createdAt}"`
+        `"${book.createdAt}"`,
+        `"${book.startedAt ?? book.createdAt}"`,
+        `"${book.finishedAt ?? ''}"`
       ]
       csvRows.push(row.join(','))
     }

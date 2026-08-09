@@ -2,7 +2,7 @@
 import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import StarRating from './StarRating.vue'
-import { BookOpen, User, Tag, FileText, CheckCircle2, ArrowLeft } from 'lucide-vue-next'
+import { BookOpen, User, Tag, FileText, CheckCircle2, ArrowLeft, Trash2 } from 'lucide-vue-next'
 import type { Book, BookFormData, BookStatus } from '../types/book'
 
 interface Props {
@@ -24,6 +24,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   (e: 'save', data: BookFormData): void
   (e: 'cancel'): void
+  (e: 'delete'): void
 }>()
 
 const router = useRouter()
@@ -170,22 +171,35 @@ const handleCancel = (): void => {
         ></textarea>
       </div>
 
-      <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-800/80">
-        <button
-          type="button"
-          @click="handleCancel"
-          class="px-5 py-2.5 rounded-xl border border-slate-700 bg-slate-800/50 hover:bg-slate-800 text-slate-300 font-medium transition-colors flex items-center gap-2 cursor-pointer"
-        >
-          <ArrowLeft class="w-4 h-4" />
-          Cancel
-        </button>
+      <div class="flex items-center justify-between gap-3 pt-4 border-t border-slate-800/80">
+        <div class="flex items-center gap-3">
+          <button
+            type="button"
+            @click="handleCancel"
+            class="px-5 py-2.5 rounded-xl border border-slate-700 bg-slate-800/50 hover:bg-slate-800 text-slate-300 font-medium transition-colors flex items-center gap-2 cursor-pointer"
+          >
+            <ArrowLeft class="w-4 h-4" />
+            Cancel
+          </button>
 
+          <button
+            type="submit"
+            class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-medium shadow-lg shadow-indigo-500/25 transition-all flex items-center gap-2 cursor-pointer"
+          >
+            <CheckCircle2 class="w-4 h-4" />
+            {{ isEdit ? 'Update' : 'Save' }}
+          </button>
+        </div>
+      </div>
+      <div class="flex items-center justify-between gap-3 pt-4 border-t border-slate-800/80"  v-if="isEdit">
         <button
-          type="submit"
-          class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-medium shadow-lg shadow-indigo-500/25 transition-all flex items-center gap-2 cursor-pointer"
+         
+          type="button"
+          @click="emit('delete')"
+          class="px-5 py-2.5 rounded-xl border border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 font-medium transition-colors flex items-center gap-2 cursor-pointer"
         >
-          <CheckCircle2 class="w-4 h-4" />
-          {{ isEdit ? 'Update Book' : 'Save Book' }}
+          <Trash2 class="w-4 h-4" />
+          Delete
         </button>
       </div>
     </form>
