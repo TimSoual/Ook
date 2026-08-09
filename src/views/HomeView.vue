@@ -8,16 +8,12 @@ import type { Book } from '../types/book'
 import {
   Search,
   Plus,
-  Download,
   Edit2,
   Trash2,
   LayoutGrid,
   LayoutList,
   BookOpen,
-  Filter,
-  CheckCircle2,
-  Clock,
-  Bookmark
+  Filter
 } from 'lucide-vue-next'
 
 const router = useRouter()
@@ -61,49 +57,6 @@ const executeDelete = (): void => {
 
 <template>
   <div class="space-y-6">
-    <!-- Header banner / Stats summary -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-4 backdrop-blur-xl flex items-center gap-3">
-        <div class="p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-indigo-400">
-          <BookOpen class="w-5 h-5" />
-        </div>
-        <div>
-          <p class="text-xs text-slate-400 font-medium">Total Books</p>
-          <p class="text-2xl font-bold text-slate-100">{{ bookStore.stats.total }}</p>
-        </div>
-      </div>
-
-      <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-4 backdrop-blur-xl flex items-center gap-3">
-        <div class="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-400">
-          <Clock class="w-5 h-5" />
-        </div>
-        <div>
-          <p class="text-xs text-slate-400 font-medium">To Read</p>
-          <p class="text-2xl font-bold text-slate-100">{{ bookStore.stats.toRead }}</p>
-        </div>
-      </div>
-
-      <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-4 backdrop-blur-xl flex items-center gap-3">
-        <div class="p-3 bg-sky-500/10 border border-sky-500/20 rounded-xl text-sky-400">
-          <Bookmark class="w-5 h-5" />
-        </div>
-        <div>
-          <p class="text-xs text-slate-400 font-medium">Reading</p>
-          <p class="text-2xl font-bold text-slate-100">{{ bookStore.stats.reading }}</p>
-        </div>
-      </div>
-
-      <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-4 backdrop-blur-xl flex items-center gap-3">
-        <div class="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-emerald-400">
-          <CheckCircle2 class="w-5 h-5" />
-        </div>
-        <div>
-          <p class="text-xs text-slate-400 font-medium">Finished</p>
-          <p class="text-2xl font-bold text-slate-100">{{ bookStore.stats.finished }}</p>
-        </div>
-      </div>
-    </div>
-
     <!-- Controls Bar -->
     <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 backdrop-blur-xl space-y-4 md:space-y-0 md:flex md:items-center md:justify-between gap-4">
       <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1">
@@ -154,15 +107,6 @@ const executeDelete = (): void => {
             <LayoutList class="w-4 h-4" />
           </button>
         </div>
-
-        <button
-          @click="bookStore.exportToCSV"
-          :disabled="bookStore.books.length === 0"
-          class="px-3.5 py-2.5 rounded-xl border border-slate-700/80 bg-slate-800/60 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-slate-200 text-sm font-medium transition-colors flex items-center gap-2 cursor-pointer"
-        >
-          <Download class="w-4 h-4 text-emerald-400" />
-          <span class="hidden sm:inline">Export CSV</span>
-        </button>
 
         <router-link
           to="/add"

@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { Library, Plus, WifiOff } from 'lucide-vue-next'
+import { Library, Plus, WifiOff, BarChart3, BookOpen } from 'lucide-vue-next'
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useRoute } from 'vue-router'
 
+const route = useRoute()
 const isOffline = ref<boolean>(!navigator.onLine)
 
 const updateOnlineStatus = (): void => {
@@ -41,20 +43,42 @@ onUnmounted(() => {
           </div>
         </router-link>
 
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 sm:gap-3">
           <div
             v-if="isOffline"
             class="flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-full text-xs font-medium"
           >
             <WifiOff class="w-3.5 h-3.5" />
-            <span>Offline Mode</span>
+            <span>Offline</span>
           </div>
 
           <router-link
-            to="/add"
-            class="px-4 py-2 rounded-xl bg-slate-900 border border-slate-700/80 hover:border-indigo-500/50 hover:bg-slate-800 text-slate-200 text-sm font-medium transition-all flex items-center gap-2"
+            to="/"
+            :class="[
+              'px-3.5 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2',
+              route.path === '/' ? 'bg-slate-800 text-indigo-400 border border-indigo-500/30' : 'text-slate-300 hover:text-white hover:bg-slate-900'
+            ]"
           >
-            <Plus class="w-4 h-4 text-indigo-400" />
+            <BookOpen class="w-4 h-4" />
+            <span class="hidden sm:inline">Books</span>
+          </router-link>
+
+          <router-link
+            to="/stats"
+            :class="[
+              'px-3.5 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2',
+              route.path === '/stats' ? 'bg-slate-800 text-indigo-400 border border-indigo-500/30' : 'text-slate-300 hover:text-white hover:bg-slate-900'
+            ]"
+          >
+            <BarChart3 class="w-4 h-4" />
+            <span class="hidden sm:inline">Stats</span>
+          </router-link>
+
+          <router-link
+            to="/add"
+            class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium transition-all flex items-center gap-1.5 shadow-md shadow-indigo-600/20"
+          >
+            <Plus class="w-4 h-4" />
             <span class="hidden sm:inline">Add Book</span>
           </router-link>
         </div>
