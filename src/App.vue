@@ -71,14 +71,6 @@ onUnmounted(() => {
         </transition>
       </router-view>
     </main>
-
-    <!-- Footer -->
-    <footer class="border-t border-slate-800/60 bg-slate-950/60 py-6">
-      <div class="max-w-6xl mx-auto px-4 text-center text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-2">
-        <p>BookTracker PWA — Offline ready reading list management</p>
-        <p>Powered by Vue 3 &amp; Vite</p>
-      </div>
-    </footer>
   </div>
 </template>
 

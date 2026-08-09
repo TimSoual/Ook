@@ -84,7 +84,6 @@ const handleCancel = () => {
 <template>
   <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 md:p-8 backdrop-blur-xl shadow-2xl">
     <form @submit.prevent="handleSubmit" class="space-y-6">
-      <!-- Title input -->
       <div>
         <label for="title" class="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
           <BookOpen class="w-4 h-4 text-indigo-400" />
@@ -105,7 +104,6 @@ const handleCancel = () => {
         </p>
       </div>
 
-      <!-- Author input -->
       <div>
         <label for="author" class="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
           <User class="w-4 h-4 text-indigo-400" />
@@ -126,9 +124,7 @@ const handleCancel = () => {
         </p>
       </div>
 
-      <!-- Status and Rating Row -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Status Dropdown -->
         <div>
           <label for="status" class="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
             <Tag class="w-4 h-4 text-indigo-400" />
@@ -145,7 +141,6 @@ const handleCancel = () => {
           </select>
         </div>
 
-        <!-- Rating -->
         <div>
           <label class="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
             Rating
@@ -157,7 +152,6 @@ const handleCancel = () => {
         </div>
       </div>
 
-      <!-- Notes textarea -->
       <div>
         <label for="notes" class="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
           <FileText class="w-4 h-4 text-indigo-400" />
@@ -172,7 +166,6 @@ const handleCancel = () => {
         ></textarea>
       </div>
 
-      <!-- Buttons -->
       <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-800/80">
         <button
           type="button"
