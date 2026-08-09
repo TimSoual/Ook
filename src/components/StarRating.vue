@@ -1,31 +1,29 @@
-<script setup>
-import { defineProps, defineEmits } from 'vue'
+<script setup lang="ts">
 import { Star } from 'lucide-vue-next'
 
-const props = defineProps({
-  modelValue: {
-    type: Number,
-    default: 1
-  },
-  readonly: {
-    type: Boolean,
-    default: false
-  },
-  size: {
-    type: String,
-    default: 'md' // 'sm', 'md', 'lg'
-  }
+interface Props {
+  modelValue?: number
+  readonly?: boolean
+  size?: 'sm' | 'md' | 'lg'
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: 1,
+  readonly: false,
+  size: 'md'
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: number): void
+}>()
 
-const setRating = (star) => {
+const setRating = (star: number): void => {
   if (!props.readonly) {
     emit('update:modelValue', star)
   }
 }
 
-const starSizeClasses = {
+const starSizeClasses: Record<string, string> = {
   sm: 'w-4 h-4',
   md: 'w-5 h-5',
   lg: 'w-7 h-7'

@@ -1,9 +1,10 @@
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useBookStore } from '../stores/bookStore'
 import StarRating from '../components/StarRating.vue'
 import StatusBadge from '../components/StatusBadge.vue'
+import type { Book } from '../types/book'
 import {
   Search,
   Plus,
@@ -14,7 +15,6 @@ import {
   LayoutList,
   BookOpen,
   Filter,
-  Star,
   CheckCircle2,
   Clock,
   Bookmark
@@ -23,14 +23,14 @@ import {
 const router = useRouter()
 const bookStore = useBookStore()
 
-const searchQuery = ref('')
-const selectedStatus = ref('all')
-const viewMode = ref('grid') // 'grid' | 'table'
+const searchQuery = ref<string>('')
+const selectedStatus = ref<string>('all')
+const viewMode = ref<'grid' | 'table'>('grid')
 
 // Confirm modal state
-const bookToDelete = ref(null)
+const bookToDelete = ref<Book | null>(null)
 
-const filteredBooks = computed(() => {
+const filteredBooks = computed<Book[]>(() => {
   return bookStore.books.filter((book) => {
     const matchesSearch =
       book.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
@@ -43,15 +43,15 @@ const filteredBooks = computed(() => {
   })
 })
 
-const handleEdit = (id) => {
+const handleEdit = (id: string): void => {
   router.push(`/edit/${id}`)
 }
 
-const confirmDelete = (book) => {
+const confirmDelete = (book: Book): void => {
   bookToDelete.value = book
 }
 
-const executeDelete = () => {
+const executeDelete = (): void => {
   if (bookToDelete.value) {
     bookStore.deleteBook(bookToDelete.value.id)
     bookToDelete.value = null
@@ -106,9 +106,7 @@ const executeDelete = () => {
 
     <!-- Controls Bar -->
     <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 backdrop-blur-xl space-y-4 md:space-y-0 md:flex md:items-center md:justify-between gap-4">
-      <!-- Search & Filter Controls -->
       <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1">
-        <!-- Search bar -->
         <div class="relative flex-1">
           <Search class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
@@ -119,7 +117,6 @@ const executeDelete = () => {
           />
         </div>
 
-        <!-- Status Filter Dropdown -->
         <div class="relative min-w-[160px]">
           <Filter class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <select
@@ -134,9 +131,7 @@ const executeDelete = () => {
         </div>
       </div>
 
-      <!-- Action Buttons -->
       <div class="flex items-center gap-2 justify-between sm:justify-end">
-        <!-- View mode toggle -->
         <div class="flex bg-slate-950/70 border border-slate-800 rounded-xl p-1">
           <button
             @click="viewMode = 'grid'"
@@ -160,7 +155,6 @@ const executeDelete = () => {
           </button>
         </div>
 
-        <!-- CSV Export Button -->
         <button
           @click="bookStore.exportToCSV"
           :disabled="bookStore.books.length === 0"
@@ -170,7 +164,6 @@ const executeDelete = () => {
           <span class="hidden sm:inline">Export CSV</span>
         </button>
 
-        <!-- Add Book Button -->
         <router-link
           to="/add"
           class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium shadow-lg shadow-indigo-500/25 transition-all flex items-center gap-2 cursor-pointer"

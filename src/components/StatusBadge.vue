@@ -1,14 +1,13 @@
-<script setup>
-import { defineProps } from 'vue'
+<script setup lang="ts">
+import type { BookStatus } from '../types/book'
 
-const props = defineProps({
-  status: {
-    type: String,
-    required: true
-  }
-})
+interface Props {
+  status: BookStatus | string
+}
 
-const statusConfig = {
+defineProps<Props>()
+
+const statusConfig: Record<string, { label: string; classes: string }> = {
   'to-read': {
     label: 'To Read',
     classes: 'bg-amber-500/10 text-amber-400 border-amber-500/30'

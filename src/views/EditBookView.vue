@@ -1,25 +1,26 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useBookStore } from '../stores/bookStore'
 import BookForm from '../components/BookForm.vue'
+import type { BookFormData } from '../types/book'
 import { Edit3, AlertCircle } from 'lucide-vue-next'
 
 const route = useRoute()
 const router = useRouter()
 const bookStore = useBookStore()
 
-const bookId = computed(() => route.params.id)
+const bookId = computed<string>(() => route.params.id as string)
 const book = computed(() => bookStore.getBookById(bookId.value))
 
-const handleSave = (updatedData) => {
+const handleSave = (updatedData: BookFormData): void => {
   if (bookId.value) {
     bookStore.updateBook(bookId.value, updatedData)
     router.push('/')
   }
 }
 
-const handleCancel = () => {
+const handleCancel = (): void => {
   router.push('/')
 }
 </script>

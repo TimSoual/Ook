@@ -1,18 +1,19 @@
-<script setup>
+<script setup lang="ts">
 import { useRouter } from 'vue-router'
 import { useBookStore } from '../stores/bookStore'
 import BookForm from '../components/BookForm.vue'
+import type { BookFormData } from '../types/book'
 import { PlusCircle } from 'lucide-vue-next'
 
 const router = useRouter()
 const bookStore = useBookStore()
 
-const handleSave = (bookData) => {
+const handleSave = (bookData: BookFormData): void => {
   bookStore.addBook(bookData)
   router.push('/')
 }
 
-const handleCancel = () => {
+const handleCancel = (): void => {
   router.push('/')
 }
 </script>

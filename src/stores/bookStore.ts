@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import type { Book, BookFormData } from '../types/book'
 
 const STORAGE_KEY = 'book-tracker-books-v1'
 
-const initialSampleBooks = [
+const initialSampleBooks: Book[] = [
   {
     id: 'sample-1',
     title: 'Atomic Habits',
@@ -37,17 +38,16 @@ const initialSampleBooks = [
 ]
 
 export const useBookStore = defineStore('bookStore', () => {
-  const books = ref([])
-  const isLoaded = ref(false)
+  const books = ref<Book[]>([])
+  const isLoaded = ref<boolean>(false)
 
   // Initialize and load from LocalStorage
-  const loadBooks = () => {
+  const loadBooks = (): void => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY)
       if (stored) {
         books.value = JSON.parse(stored)
       } else {
-        // First load defaults with sample data
         books.value = initialSampleBooks
         saveToLocalStorage()
       }
@@ -59,7 +59,7 @@ export const useBookStore = defineStore('bookStore', () => {
     }
   }
 
-  const saveToLocalStorage = () => {
+  const saveToLocalStorage = (): void => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(books.value))
     } catch (e) {
@@ -69,7 +69,7 @@ export const useBookStore = defineStore('bookStore', () => {
 
   // Getters
   const getBookById = computed(() => {
-    return (id) => books.value.find(b => b.id === id)
+    return (id: string): Book | undefined => books.value.find(b => b.id === id)
   })
 
   const stats = computed(() => {
@@ -85,9 +85,9 @@ export const useBookStore = defineStore('bookStore', () => {
   })
 
   // Actions
-  const addBook = (bookData) => {
+  const addBook = (bookData: BookFormData): Book => {
     const now = new Date().toISOString()
-    const newBook = {
+    const newBook: Book = {
       ...bookData,
       id: 'book-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
       createdAt: now,
@@ -98,7 +98,7 @@ export const useBookStore = defineStore('bookStore', () => {
     return newBook
   }
 
-  const updateBook = (id, bookData) => {
+  const updateBook = (id: string, bookData: Partial<BookFormData>): void => {
     const index = books.value.findIndex(b => b.id === id)
     if (index !== -1) {
       books.value[index] = {
@@ -110,12 +110,12 @@ export const useBookStore = defineStore('bookStore', () => {
     }
   }
 
-  const deleteBook = (id) => {
+  const deleteBook = (id: string): void => {
     books.value = books.value.filter(b => b.id !== id)
     saveToLocalStorage()
   }
 
-  const exportToCSV = () => {
+  const exportToCSV = (): void => {
     if (books.value.length === 0) return
 
     const headers = ['ID', 'Title', 'Author', 'Status', 'Rating', 'Notes', 'Created At']

@@ -1,30 +1,34 @@
-<script setup>
+<script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import StarRating from './StarRating.vue'
 import { BookOpen, User, Tag, FileText, CheckCircle2, ArrowLeft } from 'lucide-vue-next'
+import type { Book, BookFormData, BookStatus } from '../types/book'
 
-const props = defineProps({
-  initialData: {
-    type: Object,
-    default: () => ({
-      title: '',
-      author: '',
-      status: 'to-read',
-      rating: 5,
-      notes: ''
-    })
-  },
-  isEdit: {
-    type: Boolean,
-    default: false
-  }
+interface Props {
+  initialData?: Partial<Book>
+  isEdit?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  initialData: () => ({
+    title: '',
+    author: '',
+    status: 'to-read',
+    rating: 5,
+    notes: ''
+  }),
+  isEdit: false
 })
 
-const emit = defineEmits(['save', 'cancel'])
+const emit = defineEmits<{
+  (e: 'save', data: BookFormData): void
+  (e: 'cancel'): void
+}>()
+
 const router = useRouter()
 
-const formData = ref({
+const formData = ref<BookFormData>({
   title: '',
   author: '',
   status: 'to-read',
@@ -44,7 +48,7 @@ watch(
       formData.value = {
         title: newVal.title || '',
         author: newVal.author || '',
-        status: newVal.status || 'to-read',
+        status: (newVal.status as BookStatus) || 'to-read',
         rating: newVal.rating || 5,
         notes: newVal.notes || ''
       }
@@ -53,7 +57,7 @@ watch(
   { immediate: true, deep: true }
 )
 
-const validate = () => {
+const validate = (): boolean => {
   let isValid = true
   errors.value = { title: '', author: '' }
 
@@ -70,12 +74,12 @@ const validate = () => {
   return isValid
 }
 
-const handleSubmit = () => {
+const handleSubmit = (): void => {
   if (!validate()) return
   emit('save', { ...formData.value })
 }
 
-const handleCancel = () => {
+const handleCancel = (): void => {
   emit('cancel')
   router.push('/')
 }

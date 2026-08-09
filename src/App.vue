@@ -1,10 +1,10 @@
-<script setup>
+<script setup lang="ts">
 import { Library, Plus, WifiOff } from 'lucide-vue-next'
 import { ref, onMounted, onUnmounted } from 'vue'
 
-const isOffline = ref(!navigator.onLine)
+const isOffline = ref<boolean>(!navigator.onLine)
 
-const updateOnlineStatus = () => {
+const updateOnlineStatus = (): void => {
   isOffline.value = !navigator.onLine
 }
 
@@ -25,7 +25,6 @@ onUnmounted(() => {
     <div class="fixed top-0 left-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
     <div class="fixed bottom-0 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
 
-    <!-- Navigation Header -->
     <header class="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/80">
       <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
         <router-link to="/" class="flex items-center gap-3 group">
@@ -43,7 +42,6 @@ onUnmounted(() => {
         </router-link>
 
         <div class="flex items-center gap-3">
-          <!-- Offline indicator badge -->
           <div
             v-if="isOffline"
             class="flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-full text-xs font-medium"
@@ -63,7 +61,6 @@ onUnmounted(() => {
       </div>
     </header>
 
-    <!-- Main Content Area -->
     <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8">
       <router-view v-slot="{ Component }">
         <transition name="fade" mode="out-in">
