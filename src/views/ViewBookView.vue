@@ -37,6 +37,12 @@ const handleFinish = (): void => {
   }
 }
 
+const handleStart = (): void => {
+  if (bookId.value) {
+    bookStore.updateBook(bookId.value, { status: 'reading' })
+  }
+}
+
 const handleEdit = (): void => {
   router.push(`/edit/${bookId.value}`)
 }
@@ -127,8 +133,16 @@ const handleEdit = (): void => {
             Mark as Finished
           </button>
           <button
+            v-if="book.status === 'to-read'"
+            @click="handleStart"
+            class="flex-1 sm:flex-none px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium shadow-lg shadow-indigo-600/25 transition-all flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <CheckCircle2 class="w-4 h-4" />
+            Mark as Reading
+          </button>
+          <button
             @click="handleEdit"
-            class="flex-1 sm:flex-none px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium shadow-lg shadow-indigo-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer"
+            class="flex-1 sm:flex-none px-6 py-2.5 rounded-xl border border-slate-700 bg-slate-800/50 hover:bg-slate-800 text-white font-medium shadow-lg shadow-slate-800/25 transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
             <Edit2 class="w-4 h-4" />
             Edit Book

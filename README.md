@@ -2,7 +2,7 @@
 
 BookTracker is a responsive, offline-ready Progressive Web App for managing a personal reading library. Track what you want to read, what you are currently reading, and what you have finished—along with ratings, notes, and reading dates.
 
-The app is built as a client-only application: book data is stored in the browser and there is currently no backend or account synchronization.
+The app is built as a client-only application: book data is stored in the browser and there is currently no backend or account synchronization. This is on purpose, it's just a simple app intended for my personal usage.
 
 ## Features
 

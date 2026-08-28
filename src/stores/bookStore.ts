@@ -170,9 +170,9 @@ export const useBookStore = defineStore('bookStore', () => {
       const newStatus = bookData.status ?? existing.status
       const dateUpdates: Pick<Book, 'finishedAt'> = {}
 
-      if (newStatus === 'finished' && existing.status !== 'finished') {
+      if (newStatus === 'finished' && existing.status !== 'finished' && !bookData.finishedAt) {
         dateUpdates.finishedAt = now
-      } else if (newStatus !== 'finished' && existing.status === 'finished') {
+      } else if (newStatus !== 'finished' && existing.status === 'finished' && !('finishedAt' in bookData)) {
         dateUpdates.finishedAt = undefined
       }
 
@@ -180,7 +180,7 @@ export const useBookStore = defineStore('bookStore', () => {
         ...existing,
         ...bookData,
         ...dateUpdates,
-        startedAt: existing.startedAt ?? existing.createdAt,
+        startedAt: bookData.startedAt ?? existing.startedAt ?? existing.createdAt,
         updatedAt: now
       }
       saveToLocalStorage()

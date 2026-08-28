@@ -2,7 +2,7 @@
 import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import StarRating from './StarRating.vue'
-import { BookOpen, User, Tag, FileText, CheckCircle2, ArrowLeft, Trash2 } from 'lucide-vue-next'
+import { BookOpen, User, Tag, FileText, CheckCircle2, ArrowLeft, Trash2, Calendar } from 'lucide-vue-next'
 import type { Book, BookFormData, BookStatus } from '../types/book'
 
 interface Props {
@@ -34,7 +34,9 @@ const formData = ref<BookFormData>({
   author: '',
   status: 'to-read',
   rating: 5,
-  notes: ''
+  notes: '',
+  startedAt: '',
+  finishedAt: ''
 })
 
 const errors = ref({
@@ -51,7 +53,9 @@ watch(
         author: newVal.author || '',
         status: (newVal.status as BookStatus) || 'to-read',
         rating: newVal.rating || 5,
-        notes: newVal.notes || ''
+        notes: newVal.notes || '',
+        startedAt: newVal.startedAt ? newVal.startedAt.slice(0, 10) : '',
+        finishedAt: newVal.finishedAt ? newVal.finishedAt.slice(0, 10) : ''
       }
     }
   },
@@ -154,6 +158,34 @@ const handleCancel = (): void => {
             <StarRating v-model="formData.rating" size="lg" />
             <span class="text-sm font-semibold text-slate-400">{{ formData.rating }} / 5</span>
           </div>
+        </div>
+      </div>
+
+      <div v-if="isEdit" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label for="startedAt" class="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
+            <Calendar class="w-4 h-4 text-indigo-400" />
+            Started At
+          </label>
+          <input
+            id="startedAt"
+            v-model="formData.startedAt"
+            type="date"
+            class="w-full px-4 py-3 rounded-xl bg-slate-950/70 border border-slate-800 text-slate-100 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40 transition-all duration-200"
+          />
+        </div>
+
+        <div>
+          <label for="finishedAt" class="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
+            <Calendar class="w-4 h-4 text-indigo-400" />
+            Finished At
+          </label>
+          <input
+            id="finishedAt"
+            v-model="formData.finishedAt"
+            type="date"
+            class="w-full px-4 py-3 rounded-xl bg-slate-950/70 border border-slate-800 text-slate-100 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40 transition-all duration-200"
+          />
         </div>
       </div>
 
