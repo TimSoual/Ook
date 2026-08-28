@@ -21,7 +21,7 @@ The app is built as a client-only application: book data is stored in the browse
   - Total, to-read, currently-reading, and finished counts
   - Books finished this month and this year
   - Average time to finish
-  - Export the library as CSV
+  - Import and export the library as CSV
 - **Local-first persistence**
   - Books are saved to `localStorage` and survive page reloads
   - A small set of sample books is loaded on first use
@@ -120,6 +120,6 @@ When configuring the site manually in Netlify, use `npm run build` as the build 
 - Data is stored only in the current browser's LocalStorage.
 - Clearing site data removes the saved library.
 - There is no login, cloud backup, multi-device synchronization, or external book metadata lookup.
-- The CSV export is the available way to move or back up the catalog.
+- CSV import/export is the available way to move or back up the catalog.
 - There are currently no automated test scripts in `package.json`.
 

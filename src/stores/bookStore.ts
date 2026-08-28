@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { Book, BookFormData } from '../types/book'
+import { exportBooksToCSV, importBooksFromCSV } from '../utils/bookCsv'
 
 const STORAGE_KEY = 'book-tracker-books-v1'
 
@@ -53,6 +54,9 @@ const normalizeBook = (book: Book): Book => ({
     ? { finishedAt: book.updatedAt ?? book.createdAt }
     : {})
 })
+
+const createBookId = (): string =>
+  'book-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6)
 
 export const useBookStore = defineStore('bookStore', () => {
   const books = ref<Book[]>([])
@@ -147,7 +151,7 @@ export const useBookStore = defineStore('bookStore', () => {
     const now = new Date().toISOString()
     const newBook: Book = {
       ...bookData,
-      id: 'book-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
+      id: createBookId(),
       createdAt: now,
       updatedAt: now,
       startedAt: now,
@@ -189,33 +193,25 @@ export const useBookStore = defineStore('bookStore', () => {
   }
 
   const exportToCSV = (): void => {
-    if (books.value.length === 0) return
+    exportBooksToCSV(books.value)
+  }
 
-    const headers = ['ID', 'Title', 'Author', 'Status', 'Rating', 'Notes', 'Created At', 'Started At', 'Finished At']
-    const csvRows = [headers.join(',')]
+  const importFromCSV = async (file: File): Promise<{ imported: number; skipped: number; errors: string[] }> => {
+    const result = importBooksFromCSV(
+      await file.text(),
+      new Set(books.value.map(book => book.id))
+    )
 
-    for (const book of books.value) {
-      const row = [
-        `"${book.id.replace(/"/g, '""')}"`,
-        `"${book.title.replace(/"/g, '""')}"`,
-        `"${book.author.replace(/"/g, '""')}"`,
-        `"${book.status}"`,
-        book.rating || 0,
-        `"${(book.notes || '').replace(/"/g, '""').replace(/\n/g, ' ')}"`,
-        `"${book.createdAt}"`,
-        `"${book.startedAt ?? book.createdAt}"`,
-        `"${book.finishedAt ?? ''}"`
-      ]
-      csvRows.push(row.join(','))
+    if (result.books.length > 0) {
+      books.value = [...result.books, ...books.value]
+      saveToLocalStorage()
     }
 
-    const csvContent = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvRows.join('\n'))
-    const downloadAnchor = document.createElement('a')
-    downloadAnchor.setAttribute('href', csvContent)
-    downloadAnchor.setAttribute('download', `books_export_${new Date().toISOString().slice(0, 10)}.csv`)
-    document.body.appendChild(downloadAnchor)
-    downloadAnchor.click()
-    document.body.removeChild(downloadAnchor)
+    return {
+      imported: result.books.length,
+      skipped: result.errors.length,
+      errors: result.errors
+    }
   }
 
   // Auto load on store creation
@@ -230,6 +226,7 @@ export const useBookStore = defineStore('bookStore', () => {
     updateBook,
     deleteBook,
     exportToCSV,
+    importFromCSV,
     loadBooks
   }
 })

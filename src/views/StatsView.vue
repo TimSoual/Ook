@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useBookStore } from '../stores/bookStore'
 import {
   BookOpen,
@@ -12,6 +13,38 @@ import {
 } from 'lucide-vue-next'
 
 const bookStore = useBookStore()
+const importInput = ref<HTMLInputElement | null>(null)
+const importMessage = ref('')
+const importError = ref('')
+
+const openImportDialog = (): void => {
+  importInput.value?.click()
+}
+
+const handleImport = async (event: Event): Promise<void> => {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+
+  importMessage.value = ''
+  importError.value = ''
+
+  try {
+    const result = await bookStore.importFromCSV(file)
+    if (result.imported > 0) {
+      importMessage.value = `Imported ${result.imported} book${result.imported === 1 ? '' : 's'}.`
+    }
+    if (result.skipped > 0 || result.errors.length > 0) {
+      importError.value = result.errors.join(' ')
+    } else if (result.imported === 0) {
+      importError.value = 'No books were imported.'
+    }
+  } catch {
+    importError.value = 'The CSV file could not be read.'
+  } finally {
+    input.value = ''
+  }
+}
 
 function formatDuration(days: number): string {
   if (days === 0) return '—'
@@ -35,14 +68,35 @@ function formatDuration(days: number): string {
         </div>
       </div>
 
-      <button
-        @click="bookStore.exportToCSV"
-        :disabled="bookStore.books.length === 0"
-        class="px-4 py-2.5 rounded-xl border border-slate-700/80 bg-slate-800/80 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-slate-200 text-sm font-medium transition-all flex items-center gap-2 cursor-pointer shadow-md"
-      >
-        <Download class="w-4 h-4 text-emerald-400" />
-        <span>Export CSV</span>
-      </button>
+      <div class="flex items-center gap-2">
+        <input
+          ref="importInput"
+          type="file"
+          accept=".csv,text/csv"
+          class="hidden"
+          @change="handleImport"
+        />
+        <button
+          @click="openImportDialog"
+          class="px-4 py-2.5 rounded-xl border border-slate-700/80 bg-slate-800/80 hover:bg-slate-800 text-slate-200 text-sm font-medium transition-all flex items-center gap-2 cursor-pointer shadow-md"
+        >
+          <Download class="w-4 h-4 rotate-180 text-sky-400" />
+          <span>Import CSV</span>
+        </button>
+        <button
+          @click="bookStore.exportToCSV"
+          :disabled="bookStore.books.length === 0"
+          class="px-4 py-2.5 rounded-xl border border-slate-700/80 bg-slate-800/80 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-slate-200 text-sm font-medium transition-all flex items-center gap-2 cursor-pointer shadow-md"
+        >
+          <Download class="w-4 h-4 text-emerald-400" />
+          <span>Export CSV</span>
+        </button>
+      </div>
+    </div>
+
+    <div v-if="importMessage || importError" class="space-y-2 text-sm">
+      <p v-if="importMessage" class="text-emerald-400">{{ importMessage }}</p>
+      <p v-if="importError" class="text-amber-400">{{ importError }}</p>
     </div>
 
     <!-- Main Stats Grid -->
