@@ -108,6 +108,13 @@ export const useBookStore = defineStore('bookStore', () => {
         finishedDate.getFullYear() === now.getFullYear()
       )
     }).length
+    const finishedThisYear = books.value.filter(b => {
+      if (!b.finishedAt) return false
+      const finishedDate = new Date(b.finishedAt)
+      return (
+        finishedDate.getFullYear() === now.getFullYear()
+      )
+    }).length
   
     // Average time to finish
     const finishedWithStarted = books.value.filter(b => b.startedAt && b.finishedAt)
@@ -129,7 +136,8 @@ export const useBookStore = defineStore('bookStore', () => {
       reading, 
       finished, 
       avgRating, 
-      finishedThisMonth, 
+      finishedThisMonth,
+      finishedThisYear,
       avgDaysToFinish 
     }
   })

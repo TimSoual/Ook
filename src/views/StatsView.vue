@@ -138,6 +138,20 @@ function formatDuration(days: number): string {
         </div>
       </div>
 
+            <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 backdrop-blur-xl space-y-4">
+        <div class="flex items-center gap-3">
+          <div class="p-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-400">
+            <Award class="w-5 h-5" />
+          </div>
+          <h2 class="text-lg font-semibold text-slate-200">Finished This Year</h2>
+        </div>
+        <div class="flex items-baseline gap-3">
+          <span class="text-4xl font-extrabold text-emerald-400">
+            {{ bookStore.stats.finishedThisYear }}
+          </span>
+        </div>
+      </div>
+
       <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 backdrop-blur-xl space-y-4">
         <div class="flex items-center gap-3">
           <div class="p-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-400">
