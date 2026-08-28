@@ -2,22 +2,53 @@
 
 @layer base {
   body {
-    @apply bg-slate-950 text-slate-100 font-sans antialiased min-h-screen selection:bg-indigo-500 selection:text-white;
+    background-color: #031711;
+    color: #ecfdf5;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  
+  h1, h2, h3, .font-display {
+    font-family: 'Fredoka', 'Plus Jakarta Sans', cursive, sans-serif;
   }
 }
 
-/* Custom scrollbar */
+::selection {
+  background-color: #f59e0b;
+  color: #022c22;
+}
+
+/* Custom Jungle scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #0f172a;
+  background: #022c22;
 }
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #047857;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: #10b981;
+}
+
+/* Jungle Leaf Pattern Overlay */
+.jungle-bg {
+  background-color: #031711;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(5, 150, 105, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(245, 158, 11, 0.12) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
+}
+
+@keyframes banana-bounce {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-5px) rotate(4deg); }
+}
+
+.animate-banana {
+  animation: banana-bounce 2.5s ease-in-out infinite;
 }

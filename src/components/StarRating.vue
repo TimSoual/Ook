@@ -5,12 +5,14 @@ interface Props {
   modelValue?: number
   readonly?: boolean
   size?: 'sm' | 'md' | 'lg'
+  useBananas?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   modelValue: 1,
   readonly: false,
-  size: 'md'
+  size: 'md',
+  useBananas: true
 })
 
 const emit = defineEmits<{
@@ -23,15 +25,15 @@ const setRating = (star: number): void => {
   }
 }
 
-const starSizeClasses: Record<string, string> = {
-  sm: 'w-4 h-4',
-  md: 'w-5 h-5',
-  lg: 'w-7 h-7'
+const sizeClasses: Record<string, string> = {
+  sm: 'text-sm w-4 h-4',
+  md: 'text-lg w-6 h-6',
+  lg: 'text-2xl w-8 h-8'
 }
 </script>
 
 <template>
-  <div class="flex items-center gap-1">
+  <div class="flex items-center gap-1 select-none" :title="`${modelValue} / 5 Bananas`">
     <button
       v-for="star in 5"
       :key="star"
@@ -39,19 +41,33 @@ const starSizeClasses: Record<string, string> = {
       :disabled="readonly"
       @click="setRating(star)"
       :class="[
-        readonly ? 'cursor-default' : 'cursor-pointer transform hover:scale-115 transition-transform duration-150',
-        'focus:outline-none'
+        readonly ? 'cursor-default' : 'cursor-pointer transform hover:scale-125 active:scale-95 transition-all duration-150',
+        'focus:outline-none flex items-center justify-center'
       ]"
-      :aria-label="`Rate ${star} out of 5 stars`"
+      :aria-label="`Rate ${star} out of 5 bananas`"
     >
-      <Star
-        :class="[
-          starSizeClasses[size] || starSizeClasses.md,
-          star <= modelValue
-            ? 'fill-amber-400 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]'
-            : 'fill-slate-800 text-slate-600 hover:text-slate-500'
-        ]"
-      />
+      <template v-if="useBananas">
+        <span
+          :class="[
+            sizeClasses[size] || sizeClasses.md,
+            star <= modelValue
+              ? 'opacity-100 filter drop-shadow-[0_0_8px_rgba(251,191,36,0.7)] scale-105'
+              : 'opacity-25 grayscale hover:opacity-60'
+          ]"
+        >
+          🍌
+        </span>
+      </template>
+      <template v-else>
+        <Star
+          :class="[
+            sizeClasses[size] || sizeClasses.md,
+            star <= modelValue
+              ? 'fill-amber-400 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]'
+              : 'fill-emerald-950 text-emerald-800/80 hover:text-emerald-700'
+          ]"
+        />
+      </template>
     </button>
   </div>
 </template>

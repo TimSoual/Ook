@@ -14,9 +14,9 @@ export default defineConfig({
       manifest: {
         name: 'Ook',
         short_name: 'Ook',
-        description: 'Track your reading list, ratings, and notes offline.',
-        theme_color: '#4f46e5',
-        background_color: '#0f172a',
+        description: 'The Librarian\'s personal reading tracker. Track your books, earn bananas! Ook!',
+        theme_color: '#059669',
+        background_color: '#031711',
         display: 'standalone',
         icons: [
           {

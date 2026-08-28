@@ -38,12 +38,12 @@ const executeDelete = (): void => {
   <div class="max-w-2xl mx-auto space-y-6">
     <div v-if="book" class="space-y-6">
       <div class="flex items-center gap-3">
-        <div class="p-2.5 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-indigo-400">
-          <Edit3 class="w-6 h-6" />
+        <div class="p-3 bg-amber-400/20 border border-amber-400/30 rounded-2xl text-amber-300 shadow-md">
+          <Edit3 class="w-6 h-6 text-amber-400" />
         </div>
         <div>
-          <h1 class="text-2xl font-bold text-slate-100">Edit Book</h1>
-          <p class="text-sm text-slate-400">Update information for "{{ book.title }}"</p>
+          <h1 class="text-2xl font-bold font-display text-white">Edit Book Details</h1>
+          <p class="text-xs sm:text-sm text-emerald-300/80">Updating catalog entry for "{{ book.title }}"</p>
         </div>
       </div>
 
@@ -56,37 +56,37 @@ const executeDelete = (): void => {
       />
     </div>
 
-    <div v-else class="bg-slate-900/50 border border-slate-800 rounded-2xl p-12 text-center backdrop-blur-xl">
+    <div v-else class="bg-emerald-950/60 border border-emerald-900/80 rounded-3xl p-12 text-center backdrop-blur-xl">
       <AlertCircle class="w-12 h-12 text-amber-400 mx-auto mb-3" />
-      <h3 class="text-lg font-semibold text-slate-200 mb-2">Book Not Found</h3>
-      <p class="text-slate-400 text-sm mb-6">The book you are trying to edit does not exist or has been deleted.</p>
+      <h3 class="text-xl font-bold font-display text-white mb-2">Book Not Found</h3>
+      <p class="text-emerald-300/70 text-sm mb-6">Ook? The book you are trying to edit does not exist on the shelf.</p>
       <router-link
         to="/"
-        class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-xl transition-colors"
+        class="inline-flex items-center px-5 py-2.5 bg-amber-400 text-amber-950 font-bold text-sm rounded-xl transition-all shadow-md"
       >
-        Return to Home
+        Return to Bookshelf
       </router-link>
     </div>
 
     <div
       v-if="showDeleteConfirm && book"
-      class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      class="fixed inset-0 bg-emerald-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4"
     >
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
-        <h3 class="text-xl font-bold text-slate-100">Confirm Deletion</h3>
-        <p class="text-slate-300 text-sm">
-          Are you sure you want to delete <span class="font-semibold text-indigo-400">"{{ book.title }}"</span>? This action cannot be undone.
+      <div class="bg-emerald-950 border border-rose-500/40 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
+        <h3 class="text-xl font-bold font-display text-white">Confirm Book Deletion</h3>
+        <p class="text-emerald-200/80 text-sm">
+          Are you sure you want to remove <span class="font-bold text-amber-300">"{{ book.title }}"</span> from the library?
         </p>
         <div class="flex items-center justify-end gap-3 pt-2">
           <button
             @click="showDeleteConfirm = false"
-            class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium transition-colors cursor-pointer"
+            class="px-4 py-2.5 rounded-xl bg-emerald-900 hover:bg-emerald-800 text-emerald-200 text-xs font-bold transition-colors cursor-pointer"
           >
             Cancel
           </button>
           <button
             @click="executeDelete"
-            class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-sm font-medium shadow-lg shadow-rose-600/25 transition-colors cursor-pointer"
+            class="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shadow-lg shadow-rose-600/30 transition-colors cursor-pointer"
           >
             Delete Book
           </button>
