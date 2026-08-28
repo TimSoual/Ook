@@ -192,6 +192,11 @@ export const useBookStore = defineStore('bookStore', () => {
     saveToLocalStorage()
   }
 
+  const clearBooks = (): void => {
+    books.value = []
+    saveToLocalStorage()
+  }
+
   const exportToCSV = (): void => {
     exportBooksToCSV(books.value)
   }
@@ -225,6 +230,7 @@ export const useBookStore = defineStore('bookStore', () => {
     addBook,
     updateBook,
     deleteBook,
+    clearBooks,
     exportToCSV,
     importFromCSV,
     loadBooks

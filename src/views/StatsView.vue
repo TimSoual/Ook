@@ -9,16 +9,23 @@ import {
   BarChart3,
   Award,
   TrendingUp,
-  Download
+  Download,
+  Trash2
 } from 'lucide-vue-next'
 
 const bookStore = useBookStore()
 const importInput = ref<HTMLInputElement | null>(null)
 const importMessage = ref('')
 const importError = ref('')
+const showClearConfirm = ref(false)
 
 const openImportDialog = (): void => {
   importInput.value?.click()
+}
+
+const clearAllBooks = (): void => {
+  bookStore.clearBooks()
+  showClearConfirm.value = false
 }
 
 const handleImport = async (event: Event): Promise<void> => {
@@ -220,7 +227,54 @@ function formatDuration(days: number): string {
         </div>
       </div>
 
+    </div>
 
+    <!-- Deliberately low-prominence destructive action -->
+    <div class="pt-4 border-t border-slate-800/60 flex justify-end">
+      <button
+        @click="showClearConfirm = true"
+        :disabled="bookStore.books.length === 0"
+        class="text-xs text-slate-500 hover:text-rose-400 disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center gap-1.5 cursor-pointer"
+      >
+        <Trash2 class="w-3.5 h-3.5" />
+        Clear all books
+      </button>
+    </div>
+
+    <div
+      v-if="showClearConfirm"
+      class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="clear-books-title"
+    >
+      <div class="bg-slate-900 border border-rose-500/30 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
+        <div class="flex items-start gap-3">
+          <div class="p-2 bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-400 shrink-0">
+            <Trash2 class="w-5 h-5" />
+          </div>
+          <div>
+            <h2 id="clear-books-title" class="text-xl font-bold text-slate-100">Clear all books?</h2>
+            <p class="text-slate-300 text-sm mt-2">
+              This will permanently remove all {{ bookStore.books.length }} books from this browser. This action cannot be undone.
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center justify-end gap-3 pt-2">
+          <button
+            @click="showClearConfirm = false"
+            class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium transition-colors cursor-pointer"
+          >
+            Cancel
+          </button>
+          <button
+            @click="clearAllBooks"
+            class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-sm font-medium shadow-lg shadow-rose-600/25 transition-colors cursor-pointer"
+          >
+            Clear all books
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
