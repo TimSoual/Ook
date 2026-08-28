@@ -35,7 +35,7 @@ onUnmounted(() => {
           </div>
           <div>
             <span class="text-xl font-bold bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
-              BookTracker
+              Ook
             </span>
             <span class="ml-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
               PWA

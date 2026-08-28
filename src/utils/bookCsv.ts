@@ -76,7 +76,7 @@ export const importBooksFromCSV = (
   if (!hasExpectedHeaders) {
     return {
       books: [],
-      errors: ['This file does not match the BookTracker CSV format.']
+      errors: ['This file does not match the Ook CSV format.']
     }
   }
 
