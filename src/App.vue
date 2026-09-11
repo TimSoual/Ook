@@ -42,7 +42,21 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen jungle-bg text-emerald-50 flex flex-col font-sans relative overflow-x-hidden">
+  <div class="min-h-screen jungle-bg jungle-scene text-emerald-50 flex flex-col font-sans relative isolate overflow-x-hidden">
+    <!-- Decorative foliage stays behind all interactive content. -->
+    <div class="jungle-decorations" aria-hidden="true">
+      <div class="jungle-vine jungle-vine--left">
+        <i class="jungle-leaf jungle-leaf--left jungle-leaf--a"></i>
+        <i class="jungle-leaf jungle-leaf--right jungle-leaf--b"></i>
+        <i class="jungle-leaf jungle-leaf--left jungle-leaf--c"></i>
+      </div>
+      <div class="jungle-vine jungle-vine--right">
+        <i class="jungle-leaf jungle-leaf--right jungle-leaf--a"></i>
+        <i class="jungle-leaf jungle-leaf--left jungle-leaf--b"></i>
+        <i class="jungle-leaf jungle-leaf--right jungle-leaf--c"></i>
+      </div>
+    </div>
+
     <!-- Ambient Jungle Glows -->
     <div class="fixed top-0 left-1/4 w-[28rem] h-[28rem] bg-emerald-600/15 rounded-full blur-[100px] pointer-events-none -z-10 animate-pulse"></div>
     <div class="fixed bottom-0 right-1/4 w-[28rem] h-[28rem] bg-amber-500/15 rounded-full blur-[100px] pointer-events-none -z-10"></div>
@@ -132,7 +146,7 @@ onUnmounted(() => {
     </header>
 
     <!-- Main Content Area -->
-    <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8">
+    <main class="relative z-10 flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8">
       <router-view v-slot="{ Component }">
         <transition name="jungle-fade" mode="out-in">
           <component :is="Component" />
@@ -141,7 +155,7 @@ onUnmounted(() => {
     </main>
 
     <!-- Playful Footer -->
-    <footer class="border-t border-emerald-900/40 py-6 text-center text-xs text-emerald-400/60 font-medium">
+    <footer class="relative z-10 border-t border-emerald-900/40 py-6 text-center text-xs text-emerald-400/60 font-medium">
       <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
         <p class="flex items-center gap-1.5">
           <span>Ook! Managed with care at the Unseen University Library.</span>
@@ -154,6 +168,79 @@ onUnmounted(() => {
 </template>
 
 <style>
+.jungle-decorations {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Foliage is deliberately low-opacity and confined to the edges so it enriches,
+   rather than competes with, page content. */
+.jungle-vine {
+  position: absolute;
+  top: -2rem;
+  width: 3px;
+  height: min(42rem, 78vh);
+  opacity: 0.42;
+  background: linear-gradient(#86efac, #15803d 45%, #064e3b 82%, transparent);
+  box-shadow: 0 0 9px rgb(74 222 128 / 18%);
+  transform-origin: top center;
+}
+
+/* Each leaf is a child of its vine: its stem terminates at the vine, rather
+   than floating independently in the page background. */
+.jungle-vine::before,
+.jungle-vine::after {
+  content: '';
+  position: absolute;
+  width: 4.25rem;
+  height: 2.4rem;
+  border-top: 2px solid rgb(74 222 128 / 45%);
+  border-radius: 50% 50% 0 0;
+}
+.jungle-vine::before { top: 7.2rem; right: 0; transform: rotate(27deg); transform-origin: right center; }
+.jungle-vine::after { top: 18rem; left: 0; transform: rotate(-27deg); transform-origin: left center; }
+.jungle-vine--left { left: 5%; transform: rotate(6deg); }
+.jungle-vine--right { right: 5%; height: min(34rem, 62vh); transform: rotate(-7deg); opacity: 0.32; }
+
+.jungle-leaf {
+  position: absolute;
+  display: block;
+  width: 8.5rem;
+  height: 3.85rem;
+  opacity: 0.82;
+  background:
+    linear-gradient(115deg, transparent 48%, rgb(209 250 229 / 52%) 49%, transparent 50%),
+    repeating-linear-gradient(145deg, transparent 0 11px, rgb(187 247 208 / 16%) 12px 13px),
+    linear-gradient(135deg, #14532d, #059669 68%, #6ee7b7);
+  box-shadow: inset 4px -4px 12px rgb(2 44 34 / 38%), 0 10px 24px rgb(0 0 0 / 16%);
+}
+.jungle-leaf--left { right: 0; border-radius: 100% 0 100% 0; transform-origin: right center; }
+.jungle-leaf--right { left: 0; border-radius: 0 100% 0 100%; transform-origin: left center; }
+.jungle-leaf--a { top: 7.2rem; }
+.jungle-leaf--b { top: 18rem; }
+.jungle-leaf--c { top: 29rem; }
+.jungle-leaf--left.jungle-leaf--a { transform: rotate(-30deg); }
+.jungle-leaf--right.jungle-leaf--b { transform: rotate(31deg); }
+.jungle-leaf--left.jungle-leaf--c { transform: rotate(-20deg); }
+.jungle-leaf--right.jungle-leaf--a { transform: rotate(30deg); }
+.jungle-leaf--left.jungle-leaf--b { transform: rotate(-31deg); }
+.jungle-leaf--right.jungle-leaf--c { transform: rotate(20deg); }
+
+@media (max-width: 640px) {
+  .jungle-vine { top: -1rem; height: 20rem; opacity: 0.26; }
+  .jungle-vine--left { left: 3%; }
+  .jungle-vine--right { display: block; right: 3%; opacity: 0.2; }
+  .jungle-leaf { width: 5.25rem; height: 2.4rem; }
+  .jungle-leaf--a { top: 4rem; }
+  .jungle-leaf--b { top: 10.5rem; }
+  .jungle-leaf--c { display: none; }
+  .jungle-vine::before { top: 4rem; width: 2.7rem; }
+  .jungle-vine::after { top: 10.5rem; width: 2.7rem; }
+}
+
 .jungle-fade-enter-active,
 .jungle-fade-leave-active {
   transition: opacity 0.25s ease, transform 0.25s ease;

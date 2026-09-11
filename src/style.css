@@ -38,10 +38,22 @@
 /* Jungle Leaf Pattern Overlay */
 .jungle-bg {
   background-color: #031711;
-  background-image: 
+  /* A static SVG keeps the all-over foliage to one inexpensive paint layer. */
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cg fill='none' stroke='%236ee7b7' stroke-opacity='.055' stroke-width='1.4' stroke-linecap='round'%3E%3Cpath d='M-12 8C38 30 72 70 89 116c10 28 9 48 22 76'/%3E%3Cpath d='M42 48 17 28M73 88l31-20M94 132l-30 18'/%3E%3Cpath d='M17 28c-1-21 21-28 32-14C42 31 27 37 17 28ZM104 68c13-17 34-7 32 12-17 9-29 3-32-12ZM64 150c-18-2-21-23-5-32 17 8 17 23 5 32Z'/%3E%3Cpath d='M20 27l24-9m64 53 22-1m-63 75-9-21'/%3E%3C/g%3E%3C/svg%3E"),
     radial-gradient(at 0% 0%, rgba(5, 150, 105, 0.15) 0px, transparent 50%),
     radial-gradient(at 100% 0%, rgba(245, 158, 11, 0.12) 0px, transparent 50%),
     radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
+  background-repeat: repeat, no-repeat, no-repeat, no-repeat;
+  background-size: 180px 180px, auto, auto, auto;
+  background-position: center, center, center, center;
+}
+
+@media (max-width: 640px) {
+  .jungle-bg {
+    /* Fewer repetitions make the small-screen background calmer and cleaner. */
+    background-size: 240px 240px, auto, auto, auto;
+  }
 }
 
 @keyframes banana-bounce {
