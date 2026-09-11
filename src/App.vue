@@ -82,7 +82,7 @@ onUnmounted(() => {
               <span class="text-2xl font-bold font-display tracking-wide text-white group-hover:text-amber-300 transition-colors">
                 Ook
               </span>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-900/80 text-emerald-300 border border-emerald-500/30 shadow-inner uppercase tracking-wider flex items-center gap-1">
+              <span class="hidden sm:flex text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-900/80 text-emerald-300 border border-emerald-500/30 shadow-inner uppercase tracking-wider items-center gap-1">
                 <span>Discworld PWA</span>
               </span>
             </div>
