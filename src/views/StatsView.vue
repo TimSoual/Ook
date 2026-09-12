@@ -9,6 +9,9 @@ import {
   BarChart3,
   Award,
   TrendingUp,
+  Rocket,
+  Snail,
+  Timer,
   Download,
   Trash2,
   Calendar
@@ -56,7 +59,7 @@ const handleImport = async (event: Event): Promise<void> => {
 
 function formatDuration(days: number): string {
   if (days === 0) return '—'
-  if (days < 30) return `${days} days`
+  if (days < 30) return days === 1 ? '1 day' : `${days} days`
   const months = Math.round(days / 30)
   return months === 1 ? '~1 month' : `~${months} months`
 }
@@ -192,7 +195,7 @@ const librarianRank = computed(() => {
     </div>
 
     <!-- Rating & Breakdown Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div class="bg-emerald-950/60 border border-emerald-900/80 rounded-2xl p-6 backdrop-blur-xl space-y-3">
         <div class="flex items-center gap-3">
           <div class="p-2.5 bg-amber-400/20 border border-amber-400/30 rounded-xl text-amber-300">
@@ -235,6 +238,50 @@ const librarianRank = computed(() => {
             {{ formatDuration(bookStore.stats.avgDaysToFinish) }}
           </span>
         </div>
+      </div>
+
+      <div class="bg-emerald-950/60 border border-emerald-900/80 rounded-2xl p-6 backdrop-blur-xl space-y-3">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 bg-sky-500/20 border border-sky-500/30 rounded-xl text-sky-300">
+            <Timer class="w-5 h-5 text-sky-400" />
+          </div>
+          <h2 class="text-base font-bold font-display text-white">Median Pace</h2>
+        </div>
+        <div class="flex items-baseline gap-3">
+          <span class="text-3xl font-extrabold font-display text-sky-300">
+            {{ formatDuration(bookStore.stats.medianDaysToFinish) }}
+          </span>
+        </div>
+      </div>
+
+      <div class="bg-emerald-950/60 border border-emerald-900/80 rounded-2xl p-6 backdrop-blur-xl space-y-3">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 bg-amber-400/20 border border-amber-400/30 rounded-xl text-amber-300">
+            <Rocket class="w-5 h-5 text-amber-400" />
+          </div>
+          <h2 class="text-base font-bold font-display text-white">Fastest Read</h2>
+        </div>
+        <p class="text-lg font-bold font-display text-white leading-tight truncate" :title="bookStore.stats.fastestRead?.book.title">
+          {{ bookStore.stats.fastestRead?.book.title ?? '—' }}
+        </p>
+        <p v-if="bookStore.stats.fastestRead" class="text-sm font-semibold text-amber-300">
+          Finished in {{ formatDuration(bookStore.stats.fastestRead.daysToFinish) }}
+        </p>
+      </div>
+
+      <div class="bg-emerald-950/60 border border-emerald-900/80 rounded-2xl p-6 backdrop-blur-xl space-y-3">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 bg-purple-500/20 border border-purple-500/30 rounded-xl text-purple-300">
+            <Snail class="w-5 h-5 text-purple-300" />
+          </div>
+          <h2 class="text-base font-bold font-display text-white">Slowest Read</h2>
+        </div>
+        <p class="text-lg font-bold font-display text-white leading-tight truncate" :title="bookStore.stats.slowestRead?.book.title">
+          {{ bookStore.stats.slowestRead?.book.title ?? '—' }}
+        </p>
+        <p v-if="bookStore.stats.slowestRead" class="text-sm font-semibold text-purple-300">
+          Finished in {{ formatDuration(bookStore.stats.slowestRead.daysToFinish) }}
+        </p>
       </div>
     </div>
 

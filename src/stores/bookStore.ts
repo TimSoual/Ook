@@ -120,19 +120,32 @@ export const useBookStore = defineStore('bookStore', () => {
       )
     }).length
   
-    // Average time to finish
-    const finishedWithStarted = books.value.filter(b => b.startedAt && b.finishedAt)
-    const avgDaysToFinish = finishedWithStarted.length > 0
-      ? Math.round(
-          finishedWithStarted.reduce((sum, b) => {
-            const start = new Date(b.startedAt!)
-            const end = new Date(b.finishedAt!)
-            return sum + Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
-          }, 0) / finishedWithStarted.length
-        )
-      : 0;
+    // Pace metrics only use finished books with a valid reading period.
+    const completedReads = books.value.flatMap(book => {
+      if (book.status !== 'finished' || !book.startedAt || !book.finishedAt) return []
 
-      console.log(avgDaysToFinish)
+      const startedAt = new Date(book.startedAt).getTime()
+      const finishedAt = new Date(book.finishedAt).getTime()
+      const durationMs = finishedAt - startedAt
+      if (!Number.isFinite(durationMs) || durationMs < 0) {
+        return []
+      }
+      const daysToFinish = Math.max(1, Math.round(durationMs / (1000 * 60 * 60 * 24)));
+
+      return [{ book, daysToFinish }]
+    })
+    const sortedReads = [...completedReads].sort((a, b) => a.daysToFinish - b.daysToFinish)
+    const avgDaysToFinish = completedReads.length > 0
+      ? Math.round(completedReads.reduce((sum, read) => sum + read.daysToFinish, 0) / completedReads.length)
+      : 0
+    const middle = Math.floor(sortedReads.length / 2)
+    const medianDaysToFinish = sortedReads.length === 0
+      ? 0
+      : sortedReads.length % 2 === 1
+        ? sortedReads[middle].daysToFinish
+        : Math.round((sortedReads[middle - 1].daysToFinish + sortedReads[middle].daysToFinish) / 2)
+    const fastestRead = sortedReads[0]
+    const slowestRead = sortedReads.at(-1)
   
     return { 
       total, 
@@ -142,7 +155,10 @@ export const useBookStore = defineStore('bookStore', () => {
       avgRating, 
       finishedThisMonth,
       finishedThisYear,
-      avgDaysToFinish 
+      avgDaysToFinish,
+      medianDaysToFinish,
+      fastestRead,
+      slowestRead
     }
   })
 

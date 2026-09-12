@@ -23,6 +23,13 @@ Start with a single top-edge vine on mobile and show me the result before doing 
     - ratings given
     - comparaison d'une année sur l'autre
     - fun trivia (longest title...)
+    - amélioration possible : compter les jours calendaires, et pas des durées en heures divisées par 24 ou quoi
+
+Prompt:
+I want you to add 3 new stats to the stats page:
+- median pace, to be paired with the already existing average pace
+- fastest read : the book that took the less time to finish
+- slowest read : the book that took the most time to finish (take only finished books into account)
 
 4. DNF feature
 
