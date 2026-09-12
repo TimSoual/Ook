@@ -43,7 +43,6 @@ onUnmounted(() => {
 
 <template>
   <div class="min-h-screen jungle-bg jungle-scene text-emerald-50 flex flex-col font-sans relative isolate overflow-x-hidden">
-    <!-- Decorative foliage stays behind all interactive content. -->
     <div class="jungle-decorations" aria-hidden="true">
       <div class="jungle-vine jungle-vine--left">
         <i class="jungle-leaf jungle-leaf--left jungle-leaf--a"></i>
@@ -183,7 +182,7 @@ onUnmounted(() => {
   top: -2rem;
   width: 3px;
   height: min(42rem, 78vh);
-  opacity: 0.42;
+  opacity: 0.32;
   background: linear-gradient(#86efac, #15803d 45%, #064e3b 82%, transparent);
   box-shadow: 0 0 9px rgb(74 222 128 / 18%);
   transform-origin: top center;
