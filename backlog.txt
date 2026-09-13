@@ -1,35 +1,10 @@
-1. Decorative leaves on the background (maybe css?)
-
-Prompt:
-I want to add subtle decorative vegetation (leaves, vines) to the background of my app for a light jungle feel. Requirements:
-
-    Implementation: Use inline SVG or CSS — no external images, no JavaScript animation libraries. The graphics should be part of the page's background layer (pointer-events: none, behind all content, no scrollbar or overflow issues).
-    Visual restraint: Very low visual weight. Colors should be a muted, desaturated green that sits close to the existing background color — think 5–10% opacity or a barely-different tone. The effect should be noticed on second glance, not first. Nothing may compete with the text, stats, or interactive elements (check contrast ratios are unaffected).
-    Placement: Elements anchored to corners and edges, framing the content rather than sitting under it — vines creeping down from the top edge, leaves tucked in the bottom corner. Leave the center of the viewport clean.
-    Mobile-first: Design for a narrow phone viewport (max ~420px width). It must look intentional on mobile before worrying about desktop, where it should scale or stretch gracefully without tiling artifacts. Add prefers-reduced-motion handling if anything moves at all.
-    Performance: No fixed-position repaint cost tricks, no large data-URI bloat. Keep total added payload small.
-
-Start with a single top-edge vine on mobile and show me the result before doing more — I want to validate the visual weight before committing to more elements.
-
-(I did not use this prompt, maybe I should have)
-
-
 2. Enlever tailwind ?
 
 3. stats:
-    - Fastest read, longest a book stayed "currently reading"
-    - median pace
     - complex timeline graph
     - ratings given
     - comparaison d'une année sur l'autre
     - fun trivia (longest title...)
-    - amélioration possible : compter les jours calendaires, et pas des durées en heures divisées par 24 ou quoi
-
-Prompt:
-I want you to add 3 new stats to the stats page:
-- median pace, to be paired with the already existing average pace
-- fastest read : the book that took the less time to finish
-- slowest read : the book that took the most time to finish (take only finished books into account)
 
 4. DNF feature
 

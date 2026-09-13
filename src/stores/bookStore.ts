@@ -94,6 +94,7 @@ export const useBookStore = defineStore('bookStore', () => {
   })
 
   const stats = computed(() => {
+    const MILLISECONDS_IN_A_DAY = 86400000;
     const total = books.value.length
     const toRead = books.value.filter(b => b.status === 'to-read').length
     const reading = books.value.filter(b => b.status === 'reading').length
@@ -121,17 +122,23 @@ export const useBookStore = defineStore('bookStore', () => {
     }).length
   
     // Pace metrics only use finished books with a valid reading period.
+    // Important: daysToFinish is the number of calendar days in total, including the starting day, not a duration.
     const completedReads = books.value.flatMap(book => {
-      if (book.status !== 'finished' || !book.startedAt || !book.finishedAt) return []
-
-      const startedAt = new Date(book.startedAt).getTime()
-      const finishedAt = new Date(book.finishedAt).getTime()
-      const durationMs = finishedAt - startedAt
-      if (!Number.isFinite(durationMs) || durationMs < 0) {
+      if (book.status !== 'finished' || !book.startedAt || !book.finishedAt) {
         return []
       }
-      const daysToFinish = Math.max(1, Math.round(durationMs / (1000 * 60 * 60 * 24)));
 
+      const dayNumber = (d: Date): number => {
+        return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / MILLISECONDS_IN_A_DAY
+      }
+
+      const start = new Date(book.startedAt);
+      const end = new Date(book.finishedAt);
+      if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+        return []
+      }
+
+      const daysToFinish = Math.abs(dayNumber(end) - dayNumber(start)) + 1;
       return [{ book, daysToFinish }]
     })
     const sortedReads = [...completedReads].sort((a, b) => a.daysToFinish - b.daysToFinish)
